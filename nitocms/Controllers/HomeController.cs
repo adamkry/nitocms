@@ -18,10 +18,11 @@ namespace nitocms.Controllers
 
         [HttpPost]
         public ActionResult Index(HttpPostedFileBase postedFile)
-        {
+        {            
             if (postedFile != null)
             {
-                string path = Server.MapPath("~/Uploads/BlogPosts/docx");
+                var blogPostId = Guid.NewGuid();
+                string path = Server.MapPath($"~/Uploads/BlogPosts/{blogPostId}");
                 if (!Directory.Exists(path))
                 {
                     Directory.CreateDirectory(path);
