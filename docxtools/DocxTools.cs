@@ -13,7 +13,7 @@ namespace docxtools
 {
     public static class DocxTools
     {
-        public static bool ConvertToHtml(string docxPath, string outputDirectory)
+        public static bool ConvertToHtml(string docxPath, string outputDirectory, Func<int, string> imagePathFormat = null)
         {
             if (!File.Exists(docxPath))
             {
@@ -37,7 +37,7 @@ namespace docxtools
                         htmlFileName = Path.Combine(outputDirectory, htmlFileName);
                     }
                     var imageDirectoryName = Path.Combine(outputDirectory, Path.GetFileNameWithoutExtension(htmlFileName) + "_files");
-                    var htmlElement = GetImages(docxPath, imageDirectoryName, wDoc);
+                    var htmlElement = GetImages(docxPath, imageDirectoryName, wDoc, imagePathFormat);
                     
                     // Produce HTML document with <!DOCTYPE html > declaration to tell the browser
                     // we are using HTML5.
@@ -60,7 +60,8 @@ namespace docxtools
             return true;
         }
 
-        private static XElement GetImages(string docxPath, string imageDirectoryName, WordprocessingDocument wDoc)
+        private static XElement GetImages(string docxPath, string imageDirectoryName, 
+            WordprocessingDocument wDoc, Func<int, string> imagePathFormat)
         {
             int imageCounter = 0;
             var pageTitle = docxPath;
@@ -120,20 +121,19 @@ namespace docxtools
                     {
                         return null;
                     }
-                    string imageFileName = imageDirectoryName + "/image" 
-                        + imageCounter.ToString() + "." + extension;
+                    string imageFileName = $"{imagePathFormat(imageCounter)}.{extension}";
+                    string imageFilePath = Path.Combine(imageDirectoryName, imageFileName);
 
                     try
                     {
-                        imageInfo.Bitmap.Save(imageFileName, imageFormat);
+                        imageInfo.Bitmap.Save(imageFilePath, imageFormat);
                     }
                     catch (System.Runtime.InteropServices.ExternalException)
                     {
                         return null;
                     }
 
-                    string imageSource = imageDirectoryName + "/image" 
-                        + imageCounter.ToString() + "." + extension;
+                    string imageSource = Path.Combine(Path.GetFileName(imageDirectoryName), imageFileName);
                     
                     XElement img = new XElement(
                         Xhtml.img,

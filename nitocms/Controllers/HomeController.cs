@@ -31,9 +31,11 @@ namespace nitocms.Controllers
                 var resultFileName = Path.Combine(path, Path.GetFileName(postedFile.FileName));
                 postedFile.SaveAs(resultFileName);
 
-                DocxTools.ConvertToHtml(resultFileName, Path.Combine(path, "html"));
+                DocxTools.ConvertToHtml(resultFileName, 
+                    Path.Combine(path, "html"),
+                    imgNo => "image" + imgNo.ToString());
 
-                ViewBag.Message = "File uploaded successfully.";
+                ViewBag.Message = $"File uploaded successfully ({blogPostId})";
             }
 
             return View();
