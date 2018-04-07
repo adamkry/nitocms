@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2024
+VisualStudioVersion = 15.0.26228.4
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nitocms", "nitocms\nitocms.csproj", "{915A0A35-BE3A-4A7F-A94D-0054B21564CA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "docxtools", "docxtools\docxtools.csproj", "{2594393D-9FC0-46C4-8CC2-0C1244676A1A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "apiconsumer", "apiconsumer\apiconsumer.csproj", "{87493D37-987F-4304-888A-38862C931459}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{2594393D-9FC0-46C4-8CC2-0C1244676A1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2594393D-9FC0-46C4-8CC2-0C1244676A1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2594393D-9FC0-46C4-8CC2-0C1244676A1A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87493D37-987F-4304-888A-38862C931459}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87493D37-987F-4304-888A-38862C931459}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87493D37-987F-4304-888A-38862C931459}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87493D37-987F-4304-888A-38862C931459}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

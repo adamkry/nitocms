@@ -202,6 +202,10 @@
     <Content Include="Scripts\jquery-1.10.2.min.map" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\apiconsumer\apiconsumer.csproj">
+      <Project>{87493d37-987f-4304-888a-38862c931459}</Project>
+      <Name>apiconsumer</Name>
+    </ProjectReference>
     <ProjectReference Include="..\docxtools\docxtools.csproj">
       <Project>{2594393D-9FC0-46C4-8CC2-0C1244676A1A}</Project>
       <Name>docxtools</Name>
