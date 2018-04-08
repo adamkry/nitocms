@@ -23,7 +23,21 @@ namespace docxtools
         {
             HtmlDocument htmlDoc = new HtmlDocument();
             htmlDoc.LoadHtml(htmlText);
-            return htmlDoc.DocumentNode.SelectSingleNode("//body").InnerHtml;
+            string bodySection = htmlDoc.DocumentNode.SelectSingleNode("//body").InnerHtml;
+            return bodySection;
+        }
+
+        public static string GetStyles(string htmlText)
+        {
+            HtmlDocument htmlDoc = new HtmlDocument();
+            htmlDoc.LoadHtml(htmlText);
+            string stylesSection = htmlDoc.DocumentNode.SelectSingleNode("//style").InnerText;
+            int bodyStylesPosition = stylesSection.IndexOf("body");
+            if (bodyStylesPosition >= 0)
+            {
+                stylesSection = stylesSection.Substring(0, bodyStylesPosition + 1);
+            }
+            return stylesSection;
         }
     }
 }

@@ -30,5 +30,6 @@ namespace apiconsumer
         public string Title { get; set; }
         public string Content { get; set; }
         public string TextContent { get; set; }
+        public string Styles { get; set; }
     }
 }

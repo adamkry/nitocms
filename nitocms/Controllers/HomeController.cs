@@ -1,5 +1,6 @@
 ﻿using apiconsumer;
 using docxtools;
+using docxtools.HtmlHelpers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,6 +14,7 @@ namespace nitocms.Controllers
 {
     public class HomeController : Controller
     {
+        string targetUrl = "http://nitwinko-dev.azurewebsites.net";
         public ActionResult Index()
         {
             return View();
@@ -47,16 +49,21 @@ namespace nitocms.Controllers
 
                 using (var client = new HttpClient())
                 {
-                    var api = new BlogPostApi(client, "http://nitwinko-dev.azurewebsites.net");
+#if DEBUG
+                    targetUrl = "http://localhost:5000";
+#endif
+                    var api = new BlogPostApi(client, targetUrl);
                     string fileName = Path.GetFileNameWithoutExtension(htmlFileName);
-                    string htmlContent = GetContentHtml(htmlFilePath);
-                    string innerText = HtmlTools.GetText(htmlContent);
+                    var wholeHtml = System.IO.File.ReadAllText(htmlFilePath);
+                    var page = HtmlPageParser.Parse(wholeHtml);
+
                     await api.SendBlogPostAsync(new CreateBlogPostViewModel
                     {
                         Id = blogPostId,
                         Title = fileName,
-                        Content = htmlContent,
-                        TextContent = innerText
+                        Content = page.HtmlContent,
+                        TextContent = page.TextContent,
+                        Styles = page.CssStyles
                     });
                     var images = Directory.GetFiles(Path.Combine(htmlDirectoryPath, fileName + "_files"));
                     foreach (var imagePath in images)
@@ -70,12 +77,6 @@ namespace nitocms.Controllers
             }
 
             return View();
-        }
-
-        private string GetContentHtml(string htmlFilePath)
-        {
-            var wholeHtml = System.IO.File.ReadAllText(htmlFilePath);
-            return HtmlTools.GetBodyInnerHtml(wholeHtml);
-        }
+        }        
     }
 }
