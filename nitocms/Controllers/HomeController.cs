@@ -71,7 +71,7 @@ namespace nitocms.Controllers
                         foreach (var imagePath in images)
                         {
                             var imageContent = System.IO.File.ReadAllBytes(imagePath);
-                            WebApi.PostFile(client, blogPostId, imageContent, Path.GetFileName(imagePath));
+                            api.SendBlogPostImage(client, blogPostId, imageContent, Path.GetFileName(imagePath));
                         }
                     }
 

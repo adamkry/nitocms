@@ -10,7 +10,7 @@ namespace apiconsumer
 {
     public class WebApi
     {
-        public static void PostFile(HttpClient client, Guid blogPostId, byte[] fileData, string fileName)
+        public static void PostFile(HttpClient client, string requestUri, byte[] fileData, string fileName)
         {
             using (var content = new MultipartFormDataContent())
             {
@@ -21,7 +21,6 @@ namespace apiconsumer
                 //    FileName = fileName
                 //};
                 content.Add(fileContent, "photo", fileName);
-                var requestUri = $"http://localhost:5000/artykuly/addphoto/{blogPostId}";
                 var result = client.PostAsync(requestUri, content).Result;
                 if (result.StatusCode == System.Net.HttpStatusCode.Created)
                 {

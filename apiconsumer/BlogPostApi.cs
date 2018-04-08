@@ -22,6 +22,12 @@ namespace apiconsumer
             response.EnsureSuccessStatusCode();
             return true;
         }
+
+        public bool SendBlogPostImage(HttpClient client, Guid blogPostId, byte[] fileData, string fileName)
+        {
+            WebApi.PostFile(client, $"{_rootUrl}/addphoto/{blogPostId}", fileData, fileName);
+            return true;
+        }
     }
 
     public class CreateBlogPostViewModel
