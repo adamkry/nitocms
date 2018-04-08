@@ -1,0 +1,12 @@
+﻿@model nitocms.Models.BlogPostViewModel
+<div class="row">
+    <div class="col-sm-8">
+        @Model.Title
+    </div>
+    <div class="col-sm-3">
+        @Model.Created
+    </div>
+    <div class="col-sm-1">
+        @Html.ActionLink("Usuń", "Delete", new { }, new { @class = "btn btn-default" });
+    </div>
+</div>

@@ -85,5 +85,11 @@ namespace nitocms.Controllers
 
             return View();
         }        
+
+        [HttpGet]
+        public async Task<ActionResult> Delete(Guid id)
+        {
+            return View();
+        }
     }
 }
