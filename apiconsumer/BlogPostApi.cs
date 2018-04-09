@@ -28,6 +28,20 @@ namespace apiconsumer
             WebApi.PostFile(client, $"{_rootUrl}/addphoto/{blogPostId}", fileData, fileName);
             return true;
         }
+
+        public async Task<bool> SendDeleteBlogPostAsync(Guid blogPostId)
+        {
+            var response = await _client.DeleteAsync($"{_rootUrl}/{blogPostId}");
+            response.EnsureSuccessStatusCode();
+            return true;
+        }
+
+        public async Task<bool> SendRenewBlogPostAsync(Guid blogPostId)
+        {
+            var response = await _client.GetAsync($"{_rootUrl}/renew/{blogPostId}");
+            response.EnsureSuccessStatusCode();
+            return true;
+        }
     }
 
     public class CreateBlogPostViewModel

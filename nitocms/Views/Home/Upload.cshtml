@@ -1,0 +1,16 @@
+﻿@{
+    ViewBag.Title = "Dodaj nowy";
+}
+<h2>Dodaj nowy</h2>
+
+<div>
+    @using (Html.BeginForm("Index", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        <span>Select File:</span>
+        <input type="file" name="postedFile" />
+        <hr />
+        <input type="submit" value="Upload" />
+        <br />
+    }
+</div>
+

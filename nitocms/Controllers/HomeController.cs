@@ -1,6 +1,7 @@
 ﻿using apiconsumer;
 using docxtools;
 using docxtools.HtmlHelpers;
+using nitocms.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,9 +16,53 @@ namespace nitocms.Controllers
     public class HomeController : Controller
     {
         string targetUrl = "http://nitwinko-dev.azurewebsites.net";
+
+        protected string RootPath { get; set; } = "~/Uploads/BlogPosts";
+
+        public HomeController()
+        {
+#if DEBUG
+            targetUrl = "http://localhost:50943";
+#endif
+        }
+
         public ActionResult Index()
         {
-            return View();
+            HomeViewModel model = GetHomeViewModel();
+            return View(model);
+        }
+
+        public ActionResult Upload()
+        {
+            return View("Upload");
+        }
+
+        private HomeViewModel GetHomeViewModel()
+        {
+            Guid guid;
+            var posts = Directory
+                .GetDirectories(Server.MapPath(RootPath))
+                .Where(d => Guid.TryParse(Path.GetFileName(d), out guid))
+                .Select(d => new BlogPostViewModel
+                {
+                    Id = Guid.Parse(Path.GetFileName(d)),
+                    Created = Directory.GetCreationTime(d),
+                    Title = GetFileName(d),
+                    IsDeleted = CheckIfDeleted(d)
+                })
+                .OrderByDescending(a => a.Created)
+                .ToList();
+            return new HomeViewModel
+            {
+                Posts = posts
+            };
+        }
+
+        private string GetFileName(string d)
+        {
+            return Path.GetFileNameWithoutExtension(Directory
+                .GetFiles(d)
+                .Single(f => Path.GetExtension(f).ToLower() == ".docx"));
         }
 
         [HttpPost]
@@ -28,11 +73,7 @@ namespace nitocms.Controllers
                 if (postedFile != null)
                 {
                     var blogPostId = Guid.NewGuid();
-                    string path = Server.MapPath($"~/Uploads/BlogPosts/{blogPostId}");
-                    if (!Directory.Exists(path))
-                    {
-                        Directory.CreateDirectory(path);
-                    }
+                    string path = GetBlogPostDirectory(blogPostId);
 
                     var uploadedFileName = Path.GetFileName(postedFile.FileName);
                     var uploadedFilePath = Path.Combine(path, Path.GetFileName(postedFile.FileName));
@@ -47,15 +88,11 @@ namespace nitocms.Controllers
                     string htmlFileName = Path.ChangeExtension(uploadedFileName, ".html");
                     string htmlFilePath = Path.Combine(htmlDirectoryPath, htmlFileName);
 
-
-
+                    string fileName = "";
                     using (var client = new HttpClient())
                     {
-#if DEBUG
-                        targetUrl = "http://localhost:5000";
-#endif
                         var api = new BlogPostApi(client, targetUrl);
-                        string fileName = Path.GetFileNameWithoutExtension(htmlFileName);
+                        fileName = Path.GetFileNameWithoutExtension(htmlFileName);
                         var wholeHtml = System.IO.File.ReadAllText(htmlFilePath);
                         var page = HtmlPageParser.Parse(wholeHtml);
 
@@ -75,21 +112,78 @@ namespace nitocms.Controllers
                         }
                     }
 
-                    ViewBag.Message = $"File uploaded successfully ({blogPostId})";
+                    ViewBag.Message = $"Dodano artykuł: ({fileName})";
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 ViewBag.Message = ex.Message;
             }
 
-            return View();
-        }        
+            return View(GetHomeViewModel());
+        }
+
+        private string GetBlogPostDirectory(Guid blogPostId)
+        {
+            string path = Server.MapPath($"{RootPath}/{blogPostId}");
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+            return path;
+        }
 
         [HttpGet]
+        [Route("delete/{id}")]
         public async Task<ActionResult> Delete(Guid id)
         {
-            return View();
+            using (var client = new HttpClient())
+            {
+                var api = new BlogPostApi(client, targetUrl);
+                await api.SendDeleteBlogPostAsync(id);
+
+                var directory = GetBlogPostDirectory(id);
+                if (!CheckIfDeleted(directory))
+                {
+                    Delete(directory);
+                }
+            }
+                
+            return View("Index", GetHomeViewModel());
+        }
+
+        private void Delete(string path)
+        {
+            Directory.CreateDirectory(Path.Combine(path, "deleted"));
+        }
+
+        private void Restore(string path)
+        {
+            Directory.Delete(Path.Combine(path, "deleted"));
+        }
+
+        private bool CheckIfDeleted(string path)
+        {
+            var deletedDirectory = Path.Combine(path, "deleted");
+            return Directory.Exists(deletedDirectory);
+        }
+
+        [HttpGet]
+        [Route("renew/{id}")]
+        public async Task<ActionResult> Renew(Guid id)
+        {
+            using (var client = new HttpClient())
+            {
+                var api = new BlogPostApi(client, targetUrl);
+                await api.SendRenewBlogPostAsync(id);
+
+                var directory = GetBlogPostDirectory(id);
+                if (CheckIfDeleted(directory))
+                {
+                    Restore(directory);
+                }
+            }
+            return View("Index", GetHomeViewModel());
         }
     }
 }

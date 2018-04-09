@@ -1,17 +1,26 @@
 ﻿@model nitocms.Models.HomeViewModel
 
 @{
-    ViewBag.Title = "Home Page";
+    ViewBag.Title = "Artykuły";
 }
 
-<div>
-    @using (Html.BeginForm("Index", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
-    {
-        <span>Select File:</span>
-        <input type="file" name="postedFile" />
-        <hr />
-        <input type="submit" value="Upload" />
-        <br />
-        <span style="color:green">@ViewBag.Message</span>
-    }
+<div class="panel">
+    <div class="panel-heading">
+        <h2>Artykuły</h2>
+    </div>
+    <div class="panel-body">
+        <div class="row">
+            @Html.ActionLink("Dodaj nowy", "Upload", null, new { @class = "btn btn-warning" })
+        </div>
+        <div class="row">
+            <span style="color:green">@ViewBag.Message</span>
+        </div>
+        <div class="form-group">
+            @foreach (var post in Model.Posts)
+            {
+                @Html.Partial("BlogPost/_BlogPostRow", post)
+            }
+        </div>
+    </div>
 </div>
+
